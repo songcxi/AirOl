@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AirOI - 低空物流 | 智慧农业</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ---------- 全局重置 ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        body {
+            width: 375px;
+            min-width: 375px;
+            max-width: 375px;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #B3E5FC, #0288D1);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ---------- 启动页容器 ---------- */
+        .splash-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .logo-area {
+            width: 100%;
+            height: 33vh;
+            min-height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .logo {
+            font-size: 80px;
+            font-weight: 950;
+            color: white;
+            text-shadow: 0 4px 12px rgba(0,40,80,0.5), 0 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.3);
+            letter-spacing: 6px;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .content {
+            width: 100%;
+            padding-left: 20px;
+            padding-right: 10px;
+            margin-top: 0;
+        }
+
+        .title-section {
+            margin-bottom: 35px;
+        }
+
+        .main-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .description {
+            font-size: 14px;
+            color: white;
+            line-height: 1.5;
+            max-width: 100%;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            width: 90%;
+        }
+
+        .options-section {
+            width: 100%;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 20px 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .options-row {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .option-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .option-label {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .option-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 16px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 400;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            white-space: nowrap;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .option-btn.active {
+            background-color: #0288D1;
+            color: white;
+            box-shadow: 0 4px 10px rgba(2,136,209,0.4);
+        }
+
+        .enter-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 5px;
+            padding-bottom: 20px;
+        }
+
+        .enter-btn {
+            width: 90%;
+            padding: 16px;
+            background-color: transparent;
+            border: 2px solid white;
+            border-radius: 40px;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: all 0.4s;
+            backdrop-filter: blur(2px);
+            letter-spacing: 2px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .enter-btn:active {
+            background-color: rgba(255,255,255,0.15);
+            transform: scale(0.98);
+        }
+
+        /* ---------- 主应用容器 ---------- */
+        .app-container {
+            width: 100%;
+            display: none;
+            height: 100vh;
+            overflow-y: auto;
+            background: transparent;
+        }
+
+        .page {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            background: transparent;
+        }
+        .page.active {
+            display: flex;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            height: 70px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 16px;
+            border-top-left-radius: 30px;
+            border-top-right-radius: 30px;
+            border-top: 1px solid rgba(255,255,255,0.5);
+            margin-top: auto;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 30px;
+            flex: 1;
+            max-width: 120px;
+        }
+        .nav-item.active {
+            color: #0288D1;
+            background: rgba(2,136,209,0.1);
+        }
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        /* 标题栏 (子页面) */
+        .title-bar {
+            padding: 20px 16px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+        }
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            backdrop-filter: blur(5px);
+        }
+        .page-title {
+            font-size: 24px;
+            color: white;
+            font-weight: 600;
+            flex: 1;
+            text-align: center;
+        }
+        .sub-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px 20px;
+        }
+
+        /* ---------- 通用首页云背景 ---------- */
+        .cloud-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            filter: blur(8px);
+            animation: cloudMove 80s linear infinite;
+        }
+        @keyframes cloudMove {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100vw); }
+        }
+        .cloud:nth-child(1) { width: 150px; height: 50px; top: 15%; animation-duration: 90s; }
+        .cloud:nth-child(2) { width: 200px; height: 70px; top: 40%; animation-duration: 120s; animation-delay: 10s; }
+        .cloud:nth-child(3) { width: 120px; height: 40px; bottom: 20%; animation-duration: 70s; animation-delay: 5s; }
+
+        .home-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .home-header {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px 0 15px;
+            position: relative;
+            z-index: 10;
+        }
+        .home-location {
+            font-size: 18px;
+            font-weight: 500;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 40px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .home-brand-area {
+            text-align: center;
+            margin: 5px 0 45px;  /* 增加底部间距，让品牌和下方卡片距离更舒适 */
+        }
+        .home-brand-name {
+            font-size: 64px;
+            font-weight: 900;
+            color: white;
+            letter-spacing: 4px;
+            text-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+            animation: glowPulse 3s infinite alternate;
+        }
+        @keyframes glowPulse {
+            0% { text-shadow: 0 8px 16px rgba(0, 0, 0, 0.25); }
+            100% { text-shadow: 0 12px 24px rgba(2, 136, 209, 0.5), 0 0 10px rgba(255, 255, 255, 0.3); }
+        }
+        .home-brand-subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            padding: 12px 0;
+            backdrop-filter: blur(4px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 公共表单卡片基础 */
+        .home-form-card {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 28px;
+            padding: 32px 24px;
+            box-shadow: 0 25px 50px -8px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            margin: 0 auto 20px;
+        }
+        .home-form-title {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .home-form-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 17px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        .home-form-group {
+            margin-bottom: 24px;
+        }
+        .home-form-label {
+            display: block;
+            margin-bottom: 10px;
+            color: white;
+            font-weight: 500;
+            font-size: 17px;
+        }
+        .home-input-with-icon {
+            position: relative;
+        }
+        .home-input-with-icon i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 22px;
+            z-index: 1;
+        }
+        .home-form-control {
+            width: 100%;
+            padding: 18px 20px 18px 52px;
+            border-radius: 16px;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
+            font-size: 17px;
+            background-color: rgba(255, 255, 255, 0.08);
+            transition: all 0.25s ease;
+            color: white;
+        }
+        .home-form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .home-form-control:focus {
+            outline: none;
+            border-color: white;
+            box-shadow: 0 0 0 4px rgba(2, 136, 209, 0.3);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        .home-checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            margin: 30px 0 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 16px 18px;
+            border-radius: 20px;
+        }
+        .home-checkbox {
+            margin-right: 16px;
+            margin-top: 3px;
+            accent-color: #0288D1;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .home-checkbox-label {
+            color: white;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .home-checkbox-link {
+            color: #E1F5FE;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.3);
+        }
+        .home-submit-btn {
+            width: 100%;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #0288D1, #01579B);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 18px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+            box-shadow: 0 15px 30px -5px rgba(2, 136, 209, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .home-submit-btn:active { transform: translateY(0); }
+        .home-submit-btn:disabled {
+            background: rgba(128, 128, 128, 0.4);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .home-error-message {
+            color: #FFEBEE;
+            background: rgba(244, 67, 54, 0.2);
+            font-size: 15px;
+            margin-top: 8px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: none;
+            border-left: 4px solid #F44336;
+        }
+        .home-success-message {
+            display: none;
+            background: rgba(76, 175, 80, 0.25);
+            color: white;
+            padding: 18px 24px;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 25px;
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            font-size: 18px;
+        }
+
+        /* 农产品运输专用样式 */
+        .transport-card .home-form-control {
+            padding: 18px 20px 18px 52px;
+        }
+        /* 农业作业专用样式 (radio) */
+        .operation-card .home-radio-group {
+            display: flex;
+            gap: 28px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 0 18px;
+            height: 50px;
+            align-items: center;
+        }
+        .operation-card .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .operation-card .radio-custom {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.2);
+        }
+        .operation-card .radio-option input:checked + .radio-custom {
+            background: #4CAF50;
+            border-color: #fff;
+        }
+        .operation-card .radio-option input:checked + .radio-custom::after {
+            content: "✓";
+            color: white;
+            font-size: 11px;
+        }
+        .operation-card .radio-option input {
+            display: none;
+        }
+
+        /* 我的页面样式 - 更多疑问模块现在与上方模块样式一致 */
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 0 20px;
+        }
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            border: 3px solid white;
+            margin-bottom: 16px;
+        }
+        .profile-greeting {
+            font-size: 28px;
+            font-weight: 900;
+            color: white;
+        }
+        .quick-modules {
+            margin: 10px 0 20px;
+        }
+        .home-module {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        /* 更多疑问模块现在复用 .home-module 样式，不再是特殊样式 */
+        .home-module-special {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .home-module-icon {
+            width: 48px;
+            height: 48px;
+            margin-right: 16px;
+        }
+        .home-module-text {
+            flex: 1;
+            font-size: 18px;
+            color: white;
+            font-weight: 500;
+        }
+        .home-module-arrow { color: white; font-size: 24px; }
+        .special-title {
+            font-size: 18px;
+            color: white;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .special-desc {
+            font-size: 14px;
+            color: white;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+        .brown-box {
+            width: 40px; height: 40px; background: #8B4513; border-radius: 8px; position: relative;
+        }
+        .brown-box::after {
+            content: ''; position: absolute; top: 6px; left: 6px; right: 6px; bottom: 6px;
+            border: 2px solid #D2B48C; border-radius: 4px;
+        }
+        .clipboard {
+            width: 40px; height: 40px; background: #8B4513; border-radius: 6px; position: relative;
+        }
+        .clipboard::after { content: '📋'; position: absolute; top: 8px; left: 8px; font-size: 24px; color: white; }
+        .chat-bubble {
+            width: 40px; height: 40px; background: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 26px;
+        }
+        .order-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .order-item {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .order-no { font-size: 16px; color: white; font-weight: 600; }
+        .order-status { font-size: 14px; padding: 4px 12px; border-radius: 30px; background: rgba(255,255,255,0.2); }
+        .status-transporting { color: #4FC3F7; font-weight: 700; }
+        .status-pending { color: #FFE0B2; }
+        .status-completed { color: #C8E6C9; }
+        .order-info { font-size: 15px; color: white; line-height: 1.6; }
+        .cs-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        .cs-profile { display: flex; align-items: center; gap: 16px; }
+        .cs-avatar { width: 64px; height: 64px; background: rgba(2,136,209,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; color: white; }
+        .cs-name { font-size: 20px; color: white; font-weight: 600; }
+        .cs-phone { font-size: 16px; color: white; opacity: 0.9; }
+        .cs-actions { display: flex; gap: 12px; margin-top: 20px; }
+        .chat-btn, .call-btn { flex: 1; padding: 14px; border-radius: 30px; font-weight: 600; border: none; cursor: pointer; }
+        .chat-btn { background: white; color: #0288D1; }
+        .call-btn { background: #0288D1; color: white; }
+    </style>
+</head>
+<body>
+<div class="splash-container" id="splash">
+    <div class="logo-area"><div class="logo">AirOI</div></div>
+    <div class="content">
+        <h1 class="main-title">低空之眼</h1>
+        <p class="description">通过Mobile Order & Pay提前订购低空服务，并欢迎您的伙伴入驻AirOI.</p>
+        <div class="options-section">
+            <div class="options-row">
+                <div class="option-group"><span class="option-label">身份</span><div class="option-buttons"><button class="option-btn active" data-group="identity" data-value="partner">入驻伙伴</button><button class="option-btn" data-group="identity" data-value="customer">订购者</button></div></div>
+                <div class="option-group"><span class="option-label">类型</span><div class="option-buttons"><button class="option-btn active" data-group="type" data-value="transport">农产品运输</button><button class="option-btn" data-group="type" data-value="operation">农业作业</button></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="enter-section"><button class="enter-btn" id="enterAppBtn">进入</button></div>
+</div>
+
+<div class="app-container" id="app">
+    <div id="page-home" class="page active">
+        <div class="cloud-bg"><div class="cloud"></div><div class="cloud"></div><div class="cloud"></div></div>
+        <div class="main-content">
+            <div class="home-container">
+                <header class="home-header"><div class="home-location"><i class="fas fa-map-marker-alt"></i><span>武汉</span></div></header>
+                <div class="home-brand-area"><h1 class="home-brand-name">AirOI</h1><p class="home-brand-subtitle" id="dynamicSubtitle">低空之眼 · 乡村低空物流</p></div>
+                <div id="dynamicFormContainer"></div>
+            </div>
+        </div>
+        <div class="bottom-nav"><div class="nav-item active" data-page="home"><i class="fas fa-home"></i><span>首页</span></div><div class="nav-item" data-page="profile"><i class="fas fa-user"></i><span>我的</span></div></div>
+    </div>
+
+    <!-- 我的页面 - 更多疑问模块现已改为与上方一致的方框样式 -->
+    <div id="page-profile" class="page">
+        <div class="main-content">
+            <div class="profile-header"><div class="profile-avatar"><i class="fas fa-user-astronaut"></i></div><div class="profile-greeting">尊敬的AirOI用户</div></div>
+            <div class="quick-modules">
+                <div class="home-module" onclick="handleModuleClick('myOrders')"><div class="home-module-icon"><div class="brown-box"></div></div><span class="home-module-text">实时订单状态查询</span><span class="home-module-arrow">›</span></div>
+                <div class="home-module" onclick="handleModuleClick('historyOrders')"><div class="home-module-icon"><div class="clipboard"></div></div><span class="home-module-text">历史订单查询</span><span class="home-module-arrow">›</span></div>
+                <div class="home-module" onclick="handleModuleClick('customerService')"><div class="home-module-icon"><div class="chat-bubble">💬</div></div><span class="home-module-text">联系客服</span><span class="home-module-arrow">›</span></div>
+                <!-- 更多疑问模块：统一使用 .home-module-special 但样式与 .home-module 完全一致 (带方框和背景) -->
+                <div class="home-module-special" onclick="alert('功能开发中，敬请期待！')">
+                    <div class="special-title">更多疑问与安全提示</div>
+                    <div class="special-desc">保障您的交易安全·24小时在线支持</div>
+                </div>
+            </div>
+        </div>
+        <div class="bottom-nav"><div class="nav-item" data-page="home"><i class="fas fa-home"></i><span>首页</span></div><div class="nav-item active" data-page="profile"><i class="fas fa-user"></i><span>我的</span></div></div>
+    </div>
+
+    <!-- 子页面 -->
+    <div id="subpage-myOrders" class="page"><div class="title-bar"><div class="back-btn" onclick="goBackToProfile()">←</div><div class="page-title">实时订单</div><div class="placeholder"></div></div><div class="sub-content"><div class="order-list"><div class="order-item"><div class="order-header"><span class="order-no">#AO20240307001</span><span class="order-status status-transporting">运输中</span></div><div class="order-info"><div>武汉 → 黄冈</div><div>新鲜蔬菜 · 5kg</div><div>预计送达: 14:30</div></div></div><div class="order-item"><div class="order-header"><span class="order-no">#AO20240306089</span><span class="order-status status-transporting">运输中</span></div><div class="order-info"><div>武汉 → 孝感</div><div>医药用品 · 2kg</div><div>预计送达: 16:20</div></div></div></div></div></div>
+    <div id="subpage-historyOrders" class="page"><div class="title-bar"><div class="back-btn" onclick="goBackToProfile()">←</div><div class="page-title">历史订单</div><div class="placeholder"></div></div><div class="sub-content"><div class="order-list"><div class="order-item"><div class="order-header"><span class="order-no">#AO20240306023</span><span class="order-status status-pending">待支付</span></div><div class="order-info"><div>武汉 → 恩施</div><div>水果 · 8kg</div><div>待支付 · 剩余23:59</div></div></div><div class="order-item"><div class="order-header"><span class="order-no">#AO20240215012</span><span class="order-status status-completed">已完成</span></div><div class="order-info"><div>武汉 → 宜昌</div><div>农产品 · 12kg</div><div>完成: 2026-02-15</div></div></div></div></div></div>
+    <div id="subpage-customerService" class="page"><div class="title-bar"><div class="back-btn" onclick="goBackToProfile()">←</div><div class="page-title">联系客服</div><div class="placeholder"></div></div><div class="sub-content"><div class="cs-card"><div class="cs-profile"><div class="cs-avatar">🎧</div><div><div class="cs-name">小华 · 高级客服</div><div class="cs-phone">400-8820-1996</div></div></div><div class="cs-actions"><button class="chat-btn" onclick="alert('在线聊天功能开发中')">💬 在线聊天</button><button class="call-btn" onclick="alert('拨打客服电话: 400-8820-1996')">📞 立即拨打</button></div></div></div></div>
+</div>
+
+<script>
+    let selectedIdentity = 'partner';
+    let selectedType = 'transport';
+    let currentFormType = 'transport';
+
+    document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const group = this.getAttribute('data-group');
+            document.querySelectorAll(`.option-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    document.getElementById('enterAppBtn').addEventListener('click', function() {
+        selectedIdentity = document.querySelector('.option-btn[data-group="identity"].active').getAttribute('data-value');
+        selectedType = document.querySelector('.option-btn[data-group="type"].active').getAttribute('data-value');
+        document.getElementById('splash').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        
+        if (selectedIdentity === 'customer') {
+            if (selectedType === 'transport') {
+                currentFormType = 'transport';
+                renderTransportForm();
+                document.getElementById('dynamicSubtitle').innerText = '低空之眼 · 乡村低空物流';
+            } else if (selectedType === 'operation') {
+                currentFormType = 'operation';
+                renderOperationForm();
+                document.getElementById('dynamicSubtitle').innerText = '低空之眼 · 农业植保作业';
+            }
+        } else {
+            currentFormType = 'transport';
+            renderTransportForm();
+            document.getElementById('dynamicSubtitle').innerText = '低空之眼 · 乡村低空物流';
+        }
+    });
+
+    function renderTransportForm() {
+        const container = document.getElementById('dynamicFormContainer');
+        container.innerHTML = `
+            <div class="home-form-card transport-card">
+                <h2 class="home-form-title">发布运输需求</h2>
+                <p class="home-form-subtitle">填写详细信息，客服将尽快联系您安排运输</p>
+                <form id="dynamicForm">
+                    <div class="home-form-group"><label class="home-form-label">运输商品类型</label><div class="home-input-with-icon"><i class="fas fa-box"></i><input type="text" class="home-form-control" id="productType" placeholder="请输入商品名称，如：生鲜蔬菜"></div><div class="home-error-message" id="productTypeError">请输入运输商品类型</div></div>
+                    <div class="home-form-group"><label class="home-form-label">运输起点</label><div class="home-input-with-icon"><i class="fas fa-map-marker-alt"></i><input type="text" class="home-form-control" id="startPoint" placeholder="请输入详细地址"></div><div class="home-error-message" id="startPointError">请输入运输起点</div></div>
+                    <div class="home-form-group"><label class="home-form-label">运输终点</label><div class="home-input-with-icon"><i class="fas fa-flag-checkered"></i><input type="text" class="home-form-control" id="endPoint" placeholder="请输入详细地址"></div><div class="home-error-message" id="endPointError">请输入运输终点</div></div>
+                    <div class="home-form-group"><label class="home-form-label">商品数量（件）</label><div class="home-input-with-icon"><i class="fas fa-cubes"></i><input type="number" class="home-form-control" id="quantity" placeholder="请输入正整数" min="1" step="1"></div><div class="home-error-message" id="quantityError">请输入有效的商品数量</div></div>
+                    <div class="home-form-group"><label class="home-form-label">单件商品重量（kg）</label><div class="home-input-with-icon"><i class="fas fa-weight-hanging"></i><input type="number" class="home-form-control" id="weight" placeholder="请输入正数值" step="0.1" min="0.1"></div><div class="home-error-message" id="weightError">请输入有效的商品重量</div></div>
+                    <div class="home-checkbox-group"><input type="checkbox" class="home-checkbox" id="agreement" checked><label class="home-checkbox-label" for="agreement">阅读并同意 <a href="#" class="home-checkbox-link">《低空之眼用户协议》</a> 和 <a href="#" class="home-checkbox-link">《隐私协议》</a></label></div>
+                    <button type="submit" class="home-submit-btn"><i class="fas fa-paper-plane"></i> 提交客服获取联系</button>
+                    <div class="home-success-message" id="successMsg"><i class="fas fa-check-circle"></i> 提交成功，客服将尽快联系您！</div>
+                </form>
+            </div>
+        `;
+        attachTransportFormEvents();
+    }
+
+    function attachTransportFormEvents() {
+        const form = document.getElementById('dynamicForm');
+        const successDiv = document.getElementById('successMsg');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let valid = true;
+            document.querySelectorAll('.home-error-message').forEach(err => err.style.display = 'none');
+            const product = document.getElementById('productType');
+            const start = document.getElementById('startPoint');
+            const end = document.getElementById('endPoint');
+            const quantity = document.getElementById('quantity');
+            const weight = document.getElementById('weight');
+            if(!product.value.trim()) { document.getElementById('productTypeError').style.display='block'; valid=false; }
+            if(!start.value.trim()) { document.getElementById('startPointError').style.display='block'; valid=false; }
+            if(!end.value.trim()) { document.getElementById('endPointError').style.display='block'; valid=false; }
+            if(!quantity.value || parseInt(quantity.value)<=0) { document.getElementById('quantityError').style.display='block'; valid=false; }
+            if(!weight.value || parseFloat(weight.value)<=0) { document.getElementById('weightError').style.display='block'; valid=false; }
+            if(valid) {
+                form.querySelector('button').disabled = true;
+                successDiv.style.display = 'flex';
+                setTimeout(() => { successDiv.style.display = 'none'; form.reset(); form.querySelector('button').disabled = false; document.getElementById('agreement').checked = true; }, 3000);
+            }
+        });
+    }
+
+    function renderOperationForm() {
+        const container = document.getElementById('dynamicFormContainer');
+        container.innerHTML = `
+            <div class="home-form-card operation-card">
+                <h2 class="home-form-title">农业植保作业需求</h2>
+                <p class="home-form-subtitle">填写详细信息，客服将尽快联系您安排喷洒作业</p>
+                <form id="dynamicForm">
+                    <div class="home-form-group"><label class="home-form-label">作物类型</label><div class="home-input-with-icon"><i class="fas fa-tractor"></i><input type="text" class="home-form-control" id="cropType" placeholder="例：水稻、小麦、果树"></div><div class="home-error-message" id="cropTypeError">请填写作物类型</div></div>
+                    <div class="home-form-group"><label class="home-form-label">喷洒面积（亩）</label><div class="home-input-with-icon"><i class="fas fa-ruler-combined"></i><input type="number" step="any" class="home-form-control" id="area" placeholder="单位：亩"></div><div class="home-error-message" id="areaError">请输入有效喷洒面积</div></div>
+                    <div class="home-form-group"><label class="home-form-label">农药类型</label><div class="home-input-with-icon"><i class="fas fa-biohazard"></i><input type="text" class="home-form-control" id="pesticideType" placeholder="例：除草剂、杀虫剂"></div><div class="home-error-message" id="pesticideTypeError">请填写农药类型</div></div>
+                    <div class="home-form-group"><label class="home-form-label">期望作业时间</label><div class="home-input-with-icon"><i class="fas fa-calendar-alt"></i><input type="text" class="home-form-control" id="workTime" placeholder="08:00-18:00"></div><div class="home-error-message" id="workTimeError">格式错误，示例: 08:00-18:00</div></div>
+                    <div class="home-form-group"><label class="home-form-label">地形类型</label><div class="home-radio-group" id="terrainGroup"><label class="radio-option"><input type="radio" name="terrain" value="平地"><span class="radio-custom"></span><span>平地</span></label><label class="radio-option"><input type="radio" name="terrain" value="丘陵"><span class="radio-custom"></span><span>丘陵</span></label></div><div class="home-error-message" id="terrainError">请选择地形</div></div>
+                    <div class="home-form-group"><label class="home-form-label">有无障碍物</label><div class="home-radio-group" id="obstacleGroup"><label class="radio-option"><input type="radio" name="obstacle" value="有"><span class="radio-custom"></span><span>有</span></label><label class="radio-option"><input type="radio" name="obstacle" value="无"><span class="radio-custom"></span><span>无</span></label></div><div class="home-error-message" id="obstacleError">请选择有无障碍物</div></div>
+                    <div class="home-checkbox-group"><input type="checkbox" class="home-checkbox" id="agreement" checked><label class="home-checkbox-label" for="agreement">阅读并同意 <a href="#" class="home-checkbox-link">《低空之眼用户协议》</a> 和 <a href="#" class="home-checkbox-link">《隐私协议》</a></label></div>
+                    <button type="submit" class="home-submit-btn"><i class="fas fa-headset"></i> 提交客服获取联系</button>
+                    <div class="home-success-message" id="successMsg"><i class="fas fa-check-circle"></i> 提交成功，客服将尽快联系您！</div>
+                </form>
+            </div>
+        `;
+        attachOperationFormEvents();
+    }
+
+    function attachOperationFormEvents() {
+        const form = document.getElementById('dynamicForm');
+        const successDiv = document.getElementById('successMsg');
+        const timeRegex = /^\d{2}:\d{2}\s*-\s*\d{2}:\d{2}$/;
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let valid = true;
+            document.querySelectorAll('.home-error-message').forEach(err => err.style.display = 'none');
+            const crop = document.getElementById('cropType');
+            const area = document.getElementById('area');
+            const pesticide = document.getElementById('pesticideType');
+            const workTime = document.getElementById('workTime');
+            const terrainRad = document.querySelector('input[name="terrain"]:checked');
+            const obstacleRad = document.querySelector('input[name="obstacle"]:checked');
+            if(!crop.value.trim()) { document.getElementById('cropTypeError').style.display='block'; valid=false; }
+            if(!area.value || parseFloat(area.value)<=0) { document.getElementById('areaError').style.display='block'; valid=false; }
+            if(!pesticide.value.trim()) { document.getElementById('pesticideTypeError').style.display='block'; valid=false; }
+            if(!workTime.value.trim() || !timeRegex.test(workTime.value.trim())) { document.getElementById('workTimeError').style.display='block'; valid=false; }
+            if(!terrainRad) { document.getElementById('terrainError').style.display='block'; valid=false; }
+            if(!obstacleRad) { document.getElementById('obstacleError').style.display='block'; valid=false; }
+            if(valid) {
+                form.querySelector('button').disabled = true;
+                successDiv.style.display = 'flex';
+                setTimeout(() => { successDiv.style.display = 'none'; form.reset(); form.querySelector('button').disabled = false; document.getElementById('agreement').checked = true; }, 3000);
+            }
+        });
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const page = this.dataset.page;
+            document.querySelectorAll('.page[id^="page-"]:not([id^="subpage-"])').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    window.handleModuleClick = function(subpageId) {
+        document.querySelectorAll('.page[id^="page-"]:not([id^="subpage-"])').forEach(p => p.classList.remove('active'));
+        document.getElementById(`subpage-${subpageId}`).classList.add('active');
+    };
+    window.goBackToProfile = function() {
+        document.querySelectorAll('.page[id^="subpage-"]').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-profile').classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        document.querySelector('.nav-item[data-page="profile"]').classList.add('active');
+    };
+</script>
+</body>
+</html>
